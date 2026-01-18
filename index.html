@@ -1,0 +1,531 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Market Alerts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .positive {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .negative {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .neutral {
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .alert-box {
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-bullish {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            color: #065f46;
+        }
+
+        .alert-bearish {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .alert-none {
+            background: #e5e7eb;
+            border: 2px solid #6b7280;
+            color: #374151;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .headline {
+            margin: 8px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #ddd;
+        }
+
+        .headline.positive {
+            border-left-color: #10b981;
+        }
+
+        .headline.negative {
+            border-left-color: #ef4444;
+        }
+
+        .headline.neutral {
+            border-left-color: #6b7280;
+        }
+
+        .scan-results {
+            margin-top: 20px;
+        }
+
+        .scan-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .scan-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            color: #ef4444;
+            padding: 15px;
+            background: #fee2e2;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Sentiment Market Alerts</h1>
+            <p>AI-Powered Stock Analysis & Divergence Detection</p>
+        </div>
+
+        <div class="cards">
+            <!-- Stock Analysis Card -->
+            <div class="card">
+                <h2> Stock Analysis</h2>
+                <div class="input-group">
+                    <label for="ticker">Stock Ticker</label>
+                    <input type="text" id="ticker" placeholder="e.g., AAPL, TSLA, MSFT" maxlength="10">
+                </div>
+                <button class="btn" onclick="analyzeStock()">Analyze Stock</button>
+                
+                <div id="stock-result" class="result">
+                    <div id="stock-loading" class="loading" style="display:none;">
+                        <div class="spinner"></div>
+                        Analyzing...
+                    </div>
+                    <div id="stock-data"></div>
+                </div>
+            </div>
+
+            <!-- Divergence Alert Card -->
+            <div class="card">
+                <h2> Divergence Alert</h2>
+                <div class="input-group">
+                    <label for="alert-ticker">Stock Ticker</label>
+                    <input type="text" id="alert-ticker" placeholder="e.g., AAPL, TSLA, MSFT" maxlength="10">
+                </div>
+                <div class="input-group">
+                    <label for="alert-hours">Time Window (hours)</label>
+                    <input type="number" id="alert-hours" value="24" min="1" max="168">
+                </div>
+                <button class="btn" onclick="checkAlert()">Check for Divergence</button>
+                
+                <div id="alert-result" class="result">
+                    <div id="alert-loading" class="loading" style="display:none;">
+                        <div class="spinner"></div>
+                        Checking...
+                    </div>
+                    <div id="alert-data"></div>
+                </div>
+            </div>
+
+            <!-- Multi-Stock Scanner Card -->
+            <div class="card">
+                <h2> Multi-Stock Scanner</h2>
+                <div class="input-group">
+                    <label for="scan-tickers">Stock Tickers (comma-separated)</label>
+                    <input type="text" id="scan-tickers" placeholder="AAPL, TSLA, MSFT, GOOGL">
+                </div>
+                <button class="btn" onclick="scanStocks()">Scan for Divergences</button>
+                
+                <div id="scan-result" class="result">
+                    <div id="scan-loading" class="loading" style="display:none;">
+                        <div class="spinner"></div>
+                        Scanning...
+                    </div>
+                    <div id="scan-data"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+
+        async function analyzeStock() {
+            const ticker = document.getElementById('ticker').value.trim().toUpperCase();
+            if (!ticker) {
+                alert('Please enter a stock ticker');
+                return;
+            }
+
+            const resultDiv = document.getElementById('stock-result');
+            const loadingDiv = document.getElementById('stock-loading');
+            const dataDiv = document.getElementById('stock-data');
+
+            resultDiv.classList.add('show');
+            loadingDiv.style.display = 'block';
+            dataDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(API_BASE + '/api/v1/stocks/' + ticker);
+                
+                if (!response.ok) {
+                    throw new Error('Stock not found');
+                }
+
+                const data = await response.json();
+                
+                let html = '<h3> Stock Data</h3>';
+                html += '<div class="result-item"><span class="result-label">Ticker:</span> ' + data.ticker + '</div>';
+                html += '<div class="result-item"><span class="result-label">Price:</span> $' + data.price.price.toFixed(2) + '</div>';
+                html += '<div class="result-item"><span class="result-label">Change:</span> <span class="' + (data.price.change_percent >= 0 ? 'positive' : 'negative') + '">' + (data.price.change_percent >= 0 ? '' : '') + ' ' + Math.abs(data.price.change_percent).toFixed(2) + '%</span></div>';
+                html += '<div class="result-item"><span class="result-label">Data Source:</span> ' + data.source + '</div>';
+
+                if (data.sentiment) {
+                    html += '<h3 style="margin-top: 20px;"> Sentiment Analysis</h3>';
+                    html += '<div class="result-item"><span class="result-label">Overall:</span> <span class="' + data.sentiment.overall_sentiment + '">' + data.sentiment.overall_sentiment.toUpperCase() + '</span></div>';
+                    html += '<div class="result-item"><span class="result-label">Score:</span> ' + data.sentiment.score.toFixed(2) + '</div>';
+                    html += '<div class="result-item"><span class="result-label">Articles:</span> ' + data.sentiment.article_count + ' (' + data.sentiment.positive_count + ' positive, ' + data.sentiment.negative_count + ' negative, ' + data.sentiment.neutral_count + ' neutral)</div>';
+
+                    if (data.sentiment.recent_headlines && data.sentiment.recent_headlines.length > 0) {
+                        html += '<h4 style="margin-top: 15px;">Recent Headlines:</h4>';
+                        data.sentiment.recent_headlines.forEach(function(h) {
+                            const emoji = h.sentiment === 'positive' ? '' : (h.sentiment === 'negative' ? '' : '');
+                            html += '<div class="headline ' + h.sentiment + '">' + emoji + ' ' + h.headline + '</div>';
+                        });
+                    }
+                } else {
+                    html += '<p style="margin-top: 15px; color: #6b7280;">No recent news sentiment available</p>';
+                }
+
+                dataDiv.innerHTML = html;
+            } catch (error) {
+                dataDiv.innerHTML = '<div class="error"> Error: ' + error.message + '</div>';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        async function checkAlert() {
+            const ticker = document.getElementById('alert-ticker').value.trim().toUpperCase();
+            const hours = document.getElementById('alert-hours').value;
+
+            if (!ticker) {
+                alert('Please enter a stock ticker');
+                return;
+            }
+
+            const resultDiv = document.getElementById('alert-result');
+            const loadingDiv = document.getElementById('alert-loading');
+            const dataDiv = document.getElementById('alert-data');
+
+            resultDiv.classList.add('show');
+            loadingDiv.style.display = 'block';
+            dataDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(API_BASE + '/api/v1/alerts/' + ticker + '?hours=' + hours);
+                
+                if (response.status === 404) {
+                    dataDiv.innerHTML = '<div class="alert-box alert-none">ℹ No divergence detected for ' + ticker + '. Sentiment and price movement are aligned.</div>';
+                    loadingDiv.style.display = 'none';
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error('Error checking alert');
+                }
+
+                const alert = await response.json();
+                
+                const alertClass = alert.alert_type === 'bullish_divergence' ? 'alert-bullish' : 'alert-bearish';
+                const emoji = alert.alert_type === 'bullish_divergence' ? '' : '';
+
+                let html = '<div class="alert-box ' + alertClass + '">' + emoji + ' ' + alert.alert_type.replace('_', ' ').toUpperCase() + ' DETECTED!</div>';
+                html += '<div style="margin-top: 15px;">';
+                html += '<div class="result-item"><span class="result-label">Signal:</span> <strong>' + alert.divergence.signal + '</strong></div>';
+                html += '<div class="result-item"><span class="result-label">Magnitude:</span> ' + alert.divergence.magnitude.toFixed(2) + '</div>';
+                html += '<div class="result-item"><span class="result-label">Confidence:</span> ' + (alert.divergence.confidence * 100).toFixed(0) + '%</div>';
+                html += '<div class="result-item"><span class="result-label">Sentiment:</span> <span class="' + alert.sentiment.label + '">' + alert.sentiment.label.toUpperCase() + ' (' + alert.sentiment.score.toFixed(2) + ')</span></div>';
+                html += '<div class="result-item"><span class="result-label">Price Change:</span> <span class="' + (alert.price.change_percent >= 0 ? 'positive' : 'negative') + '">' + (alert.price.change_percent >= 0 ? '' : '') + ' ' + Math.abs(alert.price.change_percent).toFixed(2) + '%</span></div>';
+                html += '</div>';
+                html += '<p style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">' + alert.message + '</p>';
+
+                if (alert.top_headlines && alert.top_headlines.length > 0) {
+                    html += '<h4 style="margin-top: 15px;">Top Headlines:</h4>';
+                    alert.top_headlines.forEach(function(h) {
+                        const emoji = h.sentiment === 'positive' ? '' : '';
+                        html += '<div class="headline ' + h.sentiment + '">' + emoji + ' ' + h.headline + '</div>';
+                    });
+                }
+
+                dataDiv.innerHTML = html;
+            } catch (error) {
+                dataDiv.innerHTML = '<div class="error"> Error: ' + error.message + '</div>';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        async function scanStocks() {
+            const tickersInput = document.getElementById('scan-tickers').value.trim();
+            if (!tickersInput) {
+                alert('Please enter stock tickers');
+                return;
+            }
+
+            const tickers = tickersInput.toUpperCase().replace(/\s/g, '');
+            const resultDiv = document.getElementById('scan-result');
+            const loadingDiv = document.getElementById('scan-loading');
+            const dataDiv = document.getElementById('scan-data');
+
+            resultDiv.classList.add('show');
+            loadingDiv.style.display = 'block';
+            dataDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(API_BASE + '/api/v1/alerts/scan/' + tickers + '?hours=24');
+                
+                if (!response.ok) {
+                    throw new Error('Scan failed');
+                }
+
+                const data = await response.json();
+                
+                let html = '<h3>Scan Results</h3>';
+                html += '<div class="result-item"><span class="result-label">Tickers Checked:</span> ' + data.tickers_checked + '</div>';
+                html += '<div class="result-item"><span class="result-label">Divergences Found:</span> <strong>' + data.divergences_found + '</strong></div>';
+
+                if (data.alerts && data.alerts.length > 0) {
+                    html += '<div class="scan-results">';
+                    data.alerts.forEach(function(alert) {
+                        const alertClass = alert.alert_type === 'bullish_divergence' ? 'positive' : 'negative';
+                        const emoji = alert.alert_type === 'bullish_divergence' ? '' : '';
+                        
+                        html += '<div class="scan-item">';
+                        html += '<h4>' + emoji + ' ' + alert.ticker + ' - ' + alert.alert_type.replace('_', ' ').toUpperCase() + '</h4>';
+                        html += '<p><strong>Signal:</strong> ' + alert.divergence.signal + '</p>';
+                        html += '<p><strong>Sentiment:</strong> <span class="' + alertClass + '">' + alert.sentiment.score.toFixed(2) + '</span></p>';
+                        html += '<p><strong>Price Change:</strong> <span class="' + (alert.price.change_percent >= 0 ? 'positive' : 'negative') + '">' + alert.price.change_percent.toFixed(2) + '%</span></p>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<p style="margin-top: 15px; color: #6b7280;"> No divergences found. All tickers are aligned.</p>';
+                }
+
+                dataDiv.innerHTML = html;
+            } catch (error) {
+                dataDiv.innerHTML = '<div class="error"> Error: ' + error.message + '</div>';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('ticker').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') analyzeStock();
+        });
+        document.getElementById('alert-ticker').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkAlert();
+        });
+        document.getElementById('scan-tickers').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') scanStocks();
+        });
+    </script>
+</body>
+</html>
