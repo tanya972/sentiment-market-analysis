@@ -48,11 +48,10 @@ http://localhost:8000/docs
 
 ## 📊 API Endpoints
 
-\`\`\`http
+```http
 GET /api/v1/stocks/{ticker}           # Stock data + sentiment
 GET /api/v1/alerts/{ticker}           # Check for divergence
 GET /api/v1/alerts/scan/{tickers}     # Scan multiple stocks
-\`\`\`
 
 ![Stock Endpoint](images/stock-endpoint.png)
 
