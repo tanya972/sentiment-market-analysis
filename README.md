@@ -1,20 +1,16 @@
 # 📊 Sentiment Market Alerts
-
 AI-powered stock analysis platform that detects trading opportunities by identifying divergences between news sentiment and price movements.
 
 ---
 
 ## 🎯 What It Does
-
 Analyzes the relationship between market sentiment and price action to generate trading signals:
-
 - **Bullish Divergence**: Positive news + Price drop → BUY signal
 - **Bearish Divergence**: Negative news + Price rise → SELL signal
 
 ---
 
 ## ✨ Features
-
 - 🔍 Real-time stock price tracking & news aggregation
 - 🧠 AI sentiment analysis using FinBERT (97% accuracy on financial text)
 - 🚨 Automated divergence detection algorithm
@@ -24,7 +20,6 @@ Analyzes the relationship between market sentiment and price action to generate 
 ---
 
 ## 🏗️ Tech Stack
-
 - **Backend:** FastAPI (Python 3.11)
 - **Database:** PostgreSQL 15
 - **Cache:** Redis 7
@@ -34,30 +29,28 @@ Analyzes the relationship between market sentiment and price action to generate 
 ---
 
 ## 🚀 Quick Start
-
-\`\`\`bash
+```bash
 # Start all services
 docker compose up --build
 
 # Access API documentation
 http://localhost:8000/docs
-\`\`\`
+```
 
 ---
 
 ## 📊 API Endpoints
-
 ```http
 GET /api/v1/stocks/{ticker}           # Stock data + sentiment
 GET /api/v1/alerts/{ticker}           # Check for divergence
 GET /api/v1/alerts/scan/{tickers}     # Scan multiple stocks
+```
 
 ![Stock Endpoint](images/stock-endpoint.png)
 
 ---
 
 ## 🧠 How It Works
-
 1. **Fetch** recent news articles from multiple sources
 2. **Analyze** sentiment using FinBERT ML model
 3. **Compare** sentiment vs price movement
@@ -75,20 +68,18 @@ Result: BULLISH DIVERGENCE → BUY signal
 ---
 
 ## 📁 Project Structure
-
-\`\`\`
+```
 sentiment-market-alerts/
 ├── api/                 # FastAPI application
 ├── models/              # Database models & schemas
 ├── services/            # Business logic (price, news, sentiment, alerts)
 ├── docker-compose.yml   # Multi-container setup
 └── requirements.txt     # Dependencies
-\`\`\`
+```
 
 ---
 
 ## 🎓 Key Skills Demonstrated
-
 - RESTful API design & async Python
 - Machine learning model integration (FinBERT)
 - Multi-container Docker architecture
@@ -99,7 +90,6 @@ sentiment-market-alerts/
 ---
 
 ## 📈 Performance
-
 | Metric | Value |
 |--------|-------|
 | Cache Hit Rate | 95% |
@@ -110,7 +100,6 @@ sentiment-market-alerts/
 ---
 
 ## 🔮 Future Enhancements
-
 - Background workers for automated scanning
 - User authentication & custom watchlists
 - Historical backtesting framework
