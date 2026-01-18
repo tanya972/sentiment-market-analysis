@@ -3,8 +3,6 @@
 
 AI-powered stock analysis platform that detects trading opportunities by identifying divergences between news sentiment and price movements.
 
-![API Overview](images/api-overview.png)
-
 ---
 
 ## 🎯 What It Does
