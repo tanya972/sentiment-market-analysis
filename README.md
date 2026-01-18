@@ -64,11 +64,11 @@ GET /api/v1/alerts/scan/{tickers}     # Scan multiple stocks
 4. **Detect** divergences and generate signals
 
 **Example:**
-\`\`\`
+```
 News: "Apple announces record earnings" (+0.75 sentiment)
 Price: -2.3% (dropping)
 Result: BULLISH DIVERGENCE → BUY signal
-\`\`\`
+```
 
 ![Divergence Alert](images/divergence-alert.png)
 
