@@ -1,4 +1,3 @@
-@"
 # 📊 Sentiment Market Alerts
 
 AI-powered stock analysis platform that detects trading opportunities by identifying divergences between news sentiment and price movements.
@@ -116,28 +115,3 @@ sentiment-market-alerts/
 - User authentication & custom watchlists
 - Historical backtesting framework
 - Email/SMS alert notifications
-
----
-
-## 📝 License
-
-MIT
-
----
-
-## 👤 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [yourlinkedin](https://linkedin.com/in/yourprofile)
-
----
-
-**⭐ Star this repo if you find it helpful!**
-"@ | Out-File -FilePath README.md -Encoding UTF8
-
-Write-Host "✅ Created concise README.md" -ForegroundColor Green
-Write-Host "`n📸 Remember to take these screenshots:" -ForegroundColor Yellow
-Write-Host "  - images/api-overview.png" -ForegroundColor Gray
-Write-Host "  - images/stock-endpoint.png" -ForegroundColor Gray
-Write-Host "  - images/divergence-alert.png" -ForegroundColor Gray
